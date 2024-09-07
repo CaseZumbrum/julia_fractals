@@ -1,0 +1,124 @@
+<!DOCTYPE HTML>
+<head>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/10.6.1/math.js"></script>
+<script src="http://code.jquery.com/jquery-2.1.0.min.js"></script>
+<script>
+$(function() {
+          const myCanvas = document.createElement('canvas');
+	  size = prompt("Size:", 600);
+          myCanvas.width = size;
+          myCanvas.height = size;
+          document.body.appendChild(myCanvas);
+          const ctx = myCanvas.getContext('2d');
+          let magFact = size/3;
+        let panx = 1.5;
+        let pany = 1.5;
+	var zoomX_0 = 0;
+	var zoomY_0 = 0;
+	var zoomX = 0;
+	var zoomY = 0;
+	let real = 0;
+	let imag = 0;
+	let counter = 1;
+	
+function check(x,y,c_r,c_i,limit){
+let real = x;
+let imag = y;
+for(let i = 1; i<50;i++){
+        const treal = real*real - imag*imag + c_r;
+        const timag = 2*real*imag + c_i;
+        real = treal;
+        imag = timag;
+if(real*real + imag*imag > limit){
+return 1;
+}
+
+}
+return 0;
+}
+
+$("#mandel").click(function(e) {
+  counter = 1;  
+panx = 1.5;
+  pany = 1.5;
+  magFact = size/3;
+  var offset = $(this).offset();
+  real = (e.pageX - offset.left);
+  imag = (e.pageY - offset.top);
+	real = real/240 - 1.5;
+	imag  =-1* imag/240 -1;
+  	        for(let x = 0; x < myCanvas.width;x++){
+                for(let y = 0; y < myCanvas.height; y++){
+                        const inSet = check(x/magFact - panx, y/magFact - pany,real,imag,10);
+                        if(inSet == 0){
+				ctx.fillStyle = '#000';
+}
+			else{
+				ctx.fillStyle = '#fff';
+}
+			ctx.fillRect(x,y,1,1);
+}
+}
+document.getElementById("julia").innerHTML = "Domain: [" + (-1* panx) +" , " + (size/magFact - panx)+ "]<br>Range: [" + (-1*pany) + " , " + (size/magFact-pany) + "]<br>Zoom : " + (3*magFact/size);
+});
+$("#mandel").mousemove(function(e) {
+var offset = $(this).offset();
+  var real = (e.pageX - offset.left);
+  var imag = (e.pageY - offset.top);
+        real = real/240 - 1.5;
+        imag  =-1* imag/240 -1;
+ 
+       document.getElementById("num").innerHTML ="C = "+ real+ " + " + imag +"i";
+        
+});
+$("canvas").mousedown(function(e){
+var offset = $(this).offset();
+zoomX_0 = -1* ((e.pageX - offset.left)/magFact - panx);
+zoomY_0 = -1*((e.pageY - offset.top)/magFact - pany);
+});
+
+$("canvas").mouseup(function(e){
+var offset = $(this).offset();
+zoomX = -1*((e.pageX - offset.left)/magFact - panx);
+zoomY = -1*((e.pageY - offset.top)/magFact - pany);
+zoomX = zoomX - zoomX_0;
+zoomY = zoomY - zoomY_0;
+panx = -1 * zoomX_0;
+pany =	-1 * zoomY_0;
+counter++;
+if(zoomX < zoomY){
+magFact = size/zoomX;
+}else{
+magFact = size/zoomY;
+}
+               for(let x = 0; x < myCanvas.width;x++){
+                for(let y = 0; y < myCanvas.height; y++){
+                        const inSet = check(x/magFact - panx, y/magFact - pany,real,imag,4);
+                        if(inSet == 0){
+                                ctx.fillStyle = '#000';
+}
+                        else{
+                                ctx.fillStyle = '#fff';
+}
+                        ctx.fillRect(x,y,1,1);
+}
+}
+document.getElementById("julia").innerHTML = "Domain: [" + (-1*panx) +" , " + (size/magFact - panx)+ "]<br>Range: [" + (-1*pany) + " , " + (size/magFact-pany) + "]<br>Zoom : " + (3*magFact/size);
+
+});
+
+
+
+});
+
+</script>
+</head>
+<body>
+<a id = "mandel">
+	<img class = "demo-box" src = "images/mandelbrotset.png" />
+</a><br>
+<p id = "num"></p>
+<p id = "julia"></p>
+</body>
+</html>
+
